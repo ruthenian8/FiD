@@ -10,6 +10,7 @@ import torch
 import transformers
 import numpy as np
 from pathlib import Path
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from torch.utils.data import DataLoader, RandomSampler, DistributedSampler, SequentialSampler
 from src.options import Options
 
@@ -153,7 +154,7 @@ if __name__ == "__main__":
     model_class = src.model.FiDT5
 
     #load data
-    tokenizer = transformers.T5Tokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     collator = src.data.Collator(opt.text_maxlength, tokenizer, answer_maxlength=opt.answer_maxlength)
 
     # use golbal rank and world size to split the eval set on multiple gpus
@@ -172,7 +173,7 @@ if __name__ == "__main__":
     eval_dataset = src.data.Dataset(eval_examples, opt.n_context)
 
     if not checkpoint_exists and opt.model_path == "none":
-        t5 = transformers.T5ForConditionalGeneration.from_pretrained(model_name)
+        t5 = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         model = src.model.FiDT5(t5.config)
         model.load_t5(t5.state_dict())
         model = model.to(opt.local_rank)

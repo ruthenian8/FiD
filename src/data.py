@@ -128,7 +128,7 @@ def load_data(data_path=None, global_rank=-1, world_size=-1):
             data = json.load(fin)
     examples = []
     for k, example in enumerate(data):
-        if global_rank > -1 and not k%world_size==global_rank:
+        if global_rank > -1 and not k%(world_size or 1)==global_rank:
             continue
         if data_path is not None and data_path.endswith('.jsonl'):
             example = json.loads(example)

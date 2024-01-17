@@ -143,7 +143,8 @@ class EncoderWrapper(torch.nn.Module):
         input_ids = input_ids.view(bsz*self.n_passages, passage_length)
         attention_mask = attention_mask.view(bsz*self.n_passages, passage_length)
         outputs = self.encoder(input_ids, attention_mask, **kwargs)
-        outputs = (outputs[0].view(bsz, self.n_passages*passage_length, -1), ) + outputs[1:]
+        outputs_2 = (outputs[0].view(bsz, self.n_passages*passage_length, -1), ) + outputs[1:]
+        outputs = type(outputs)(hidden_states=outputs_2[0], last_hidden_state=outputs_2[-1][-1])
         return outputs
 
 class CheckpointWrapper(torch.nn.Module):
